@@ -14,7 +14,7 @@ pub fn run_app() -> Result<(), JsValue> {
     Ok(())
 }
 /// set up a simple 3D scene
-fn setup(
+pub fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
@@ -51,7 +51,7 @@ fn setup(
 
 
 // This system rotates the camera around the scene
-fn camera_rotation_system(mut query: Query<(&mut Transform, &Camera3d), With<Camera3d>>, time: Res<Time>) {
+pub fn camera_rotation_system(mut query: Query<(&mut Transform, &Camera3d), With<Camera3d>>, time: Res<Time>) {
     // The speed of the rotation
     let rotation_speed = 0.5; // radians per second
     for (mut transform, _) in query.iter_mut() {

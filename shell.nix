@@ -17,7 +17,6 @@ pkgs.mkShell {
       pkgs.udev
       pkgs.vulkan-loader
     ]}"
-    rustup target add wasm32-unknown-unknown
   '';
 
   buildInputs = with pkgs; [
