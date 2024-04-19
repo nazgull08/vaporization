@@ -3296,6 +3296,7 @@ name = "vaporization"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "bevy_gltf",
  "wasm-bindgen",
  "web-sys",
 ]
