@@ -7,17 +7,14 @@ use wasm_bindgen::prelude::*;
 #[derive(Resource)]
 pub struct MyAssetPack(Handle<Gltf>);
 
-#[derive(Debug,Component)]
+#[derive(Debug, Component)]
 pub struct FirstPersonCamera {
     pub speed: f32,
     pub sensitivity: f32,
 }
 
-
-
 #[wasm_bindgen(start)]
 pub fn run_app() -> Result<(), JsValue> {
-
     App::new()
         .add_plugins((DefaultPlugins))
         .add_systems(Startup, load_gltf)
@@ -29,10 +26,7 @@ pub fn run_app() -> Result<(), JsValue> {
     Ok(())
 }
 
-pub fn load_gltf(
-    mut commands: Commands,
-    ass: Res<AssetServer>,
-) {
+pub fn load_gltf(mut commands: Commands, ass: Res<AssetServer>) {
     let gltf = ass.load("glb/skull.glb");
     commands.insert_resource(MyAssetPack(gltf));
     info!("=====Loaded own glbs")
@@ -57,7 +51,7 @@ pub fn setup(
         transform: Transform::from_rotation(Quat::from_rotation_x(-std::f32::consts::FRAC_PI_2)),
         ..default()
     });
-    
+
     commands.spawn(SceneBundle {
         scene: skull_gltf,
         transform: Transform::from_xyz(0.5, 0.0, -1.0),
@@ -75,7 +69,7 @@ pub fn setup(
         transform: Transform::from_xyz(-1.5, 0.0, -3.0),
         ..Default::default()
     });
-    
+
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
@@ -86,18 +80,22 @@ pub fn setup(
         ..default()
     });
     // camera
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    }).insert(FirstPersonCamera {
-        speed: 5.0,
-        sensitivity: 0.1,
-    });
+    commands
+        .spawn(Camera3dBundle {
+            transform: Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+            ..default()
+        })
+        .insert(FirstPersonCamera {
+            speed: 5.0,
+            sensitivity: 0.1,
+        });
 }
 
-
 // This system rotates the camera around the scene
-pub fn camera_rotation_system(mut query: Query<(&mut Transform, &Camera3d), With<Camera3d>>, time: Res<Time>) {
+pub fn camera_rotation_system(
+    mut query: Query<(&mut Transform, &Camera3d), With<Camera3d>>,
+    time: Res<Time>,
+) {
     // The speed of the rotation
     let rotation_speed = 0.5; // radians per second
     for (mut transform, _) in query.iter_mut() {
@@ -117,7 +115,7 @@ pub fn first_person_camera_system(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut mouse_motion_events: EventReader<MouseMotion>,
 ) {
-     let (mut transform, camera) = query.single_mut();
+    let (mut transform, camera) = query.single_mut();
     let mut delta_mouse = Vec2::ZERO;
 
     for event in mouse_motion_events.read() {
@@ -128,7 +126,8 @@ pub fn first_person_camera_system(
     transform.rotate_y(-delta_mouse.x * camera.sensitivity * time.delta_seconds());
 
     // Обрабатываем вертикальное вращение камеры (pitch) с ограничением
-    let mut local_rotation = Quat::from_rotation_x(-delta_mouse.y * camera.sensitivity * time.delta_seconds());
+    let mut local_rotation =
+        Quat::from_rotation_x(-delta_mouse.y * camera.sensitivity * time.delta_seconds());
     let current_pitch = transform.rotation.to_euler(EulerRot::XYZ).0; // Получаем текущий pitch
     let new_pitch = current_pitch + local_rotation.to_euler(EulerRot::XYZ).0;
 
